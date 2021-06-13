@@ -66,6 +66,8 @@ def sendMail():
     showinfo('Confirmation', 'EMAIL SENT !')
     bromemail_fen.destroy()
 
+
+
 def pieceJointe():
     pieceJointeFen=Tk()
     pieceJointeFen.title("Ajout de piece jointe")
@@ -97,14 +99,10 @@ def pieceJointe():
 destinatairePieceJointeButton=Button(frame3, text="Ajouter une piece jointe", command=pieceJointe)
 destinatairePieceJointeButton.grid(row=3, column=2)
 
-
-#destinatairePieceJointeButton=Button(frame3, text="Ajouter une piece jointe", command=pieceJointe)
-
 destinataireSujetLabel.grid(row=1, column=1)
 destinataireSujet.grid(row=1, column=2)
 destinataireMessageLabel.grid(row=2, column=1)
 destinataireMessage.grid(row=2, column=2)
-#destinatairePieceJointeButton.grid(row=3, column=2)
 
 sendButton=Button(bromemail_fen, command=sendMail, text="Envoyer")
 sendButton.pack()
