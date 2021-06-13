@@ -1,7 +1,10 @@
-from email.message import EmailMessage
+from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email import encoders
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from tkinter import *
+from tkinter.filedialog import askopenfilename
 from tkinter.messagebox import *
 
 bromemail_fen=Tk()
@@ -36,11 +39,7 @@ destinataireSujet=Entry(frame3, textvariable=str, width=147)
 destinataireMessageLabel=Label(frame3, text="Message : ")
 destinataireMessage=Text(frame3, height=30, width=110)
 
-destinataireSujetLabel.grid(row=1, column=1)
-destinataireSujet.grid(row=1, column=2)
-destinataireMessageLabel.grid(row=2, column=1)
-destinataireMessage.grid(row=2, column=2)
-
+message=MIMEMultipart()
 
 def sendMail():
     expediteurEmailRecup=expediteurEmail.get()
@@ -49,20 +48,63 @@ def sendMail():
     destinataireSujetRecup=destinataireSujet.get()
     destinataireMessageRecup=destinataireMessage.get("1.0", "end")
 
-    message=EmailMessage()
+    
     message['From']=expediteurEmailRecup
     message['To']=destinataireEmailRecup
     message['Subject']=destinataireSujetRecup
-    message.set_content(destinataireMessageRecup)
+    msg=destinataireMessageRecup
+    message.attach(MIMEText(msg.encode('utf-8'), 'plain', 'utf-8'))
+
+    
 
     bromemail=smtplib.SMTP_SSL("smtp.gmail.com", 465)
     bromemail.ehlo()
     bromemail.login(expediteurEmailRecup, expediteurPasswordRecup)
-    bromemail.send_message(message)
+    texte=message.as_string().encode('utf-8')
+    bromemail.sendmail(expediteurEmailRecup, destinataireEmailRecup, texte)
     bromemail.quit()
     showinfo('Confirmation', 'EMAIL SENT !')
     bromemail_fen.destroy()
 
+def pieceJointe():
+    pieceJointeFen=Tk()
+    pieceJointeFen.title("Ajout de piece jointe")
+
+    entree=askopenfilename(title="Ouvrir le fichier", filetypes=[('all files', '.*')])
+    warningLabel=Label(pieceJointeFen, text="choisir le nom de la piece jointe (ne pas oublier l'extension) : ")
+    cheminPiece=Label(pieceJointeFen, text=entree)
+    cheminPiece.pack()
+    warningLabel.pack()
+    nomDeLaPiece=Entry(pieceJointeFen, textvariable=str, width=70)
+    nomDeLaPiece.pack()
+
+    def validationPieceJointe():
+        chemin=entree
+        piece=open(chemin, "rb")
+        part = MIMEBase('application', 'octet-stream')
+        part.set_payload((piece).read())
+        encoders.encode_base64(part)
+        part.add_header('Content-Disposition', "piece; filename= %s" %  nomDeLaPiece.get())
+        message.attach(part)
+        showinfo('Conhirmation', 'Piece jointe ajouté')
+        pieceJointeFen.destroy()
+    
+    valider=Button(pieceJointeFen, text="Valider", command=validationPieceJointe)
+    valider.pack()
+    
+    pieceJointeFen.mainloop()
+    
+destinatairePieceJointeButton=Button(frame3, text="Ajouter une piece jointe", command=pieceJointe)
+destinatairePieceJointeButton.grid(row=3, column=2)
+
+
+#destinatairePieceJointeButton=Button(frame3, text="Ajouter une piece jointe", command=pieceJointe)
+
+destinataireSujetLabel.grid(row=1, column=1)
+destinataireSujet.grid(row=1, column=2)
+destinataireMessageLabel.grid(row=2, column=1)
+destinataireMessage.grid(row=2, column=2)
+#destinatairePieceJointeButton.grid(row=3, column=2)
 
 sendButton=Button(bromemail_fen, command=sendMail, text="Envoyer")
 sendButton.pack()
