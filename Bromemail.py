@@ -88,12 +88,12 @@ def pieceJointe():
         encoders.encode_base64(part)
         part.add_header('Content-Disposition', "piece; filename= %s" %  nomDeLaPiece.get())
         message.attach(part)
-        showinfo('Conhirmation', 'Piece jointe ajouté')
+        showinfo('Confirmation', 'Piece jointe ajouté')
         pieceJointeFen.destroy()
     
     valider=Button(pieceJointeFen, text="Valider", command=validationPieceJointe)
     valider.pack()
-    
+    pieceJointeFen.iconbitmap("iconeBROMEMAIL.ico")    
     pieceJointeFen.mainloop()
     
 destinatairePieceJointeButton=Button(frame3, text="Ajouter une piece jointe", command=pieceJointe)
@@ -107,4 +107,6 @@ destinataireMessage.grid(row=2, column=2)
 sendButton=Button(bromemail_fen, command=sendMail, text="Envoyer")
 sendButton.pack()
 
+
+bromemail_fen.iconbitmap("iconeBROMEMAIL.ico")
 bromemail_fen.mainloop()
